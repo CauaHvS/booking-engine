@@ -21,4 +21,6 @@ jobs:
           cache: maven
 
       - name: Executa testes
-        run: ./mvnw clean verify -B
+        run: |
+          chmod +x mvnw
+          ./mvnw clean verify -B
