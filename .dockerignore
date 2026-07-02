@@ -1,0 +1,7 @@
+.git
+.idea
+.claude
+target
+*.md
+ROADMAP.md
+docs
