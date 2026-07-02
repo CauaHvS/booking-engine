@@ -9,6 +9,8 @@ import com.bookingengine.domain.port.in.CreateBookingUseCase;
 import com.bookingengine.domain.port.in.QueryBookingsUseCase;
 import com.bookingengine.infrastructure.web.dto.BookingResponse;
 import com.bookingengine.infrastructure.web.dto.CreateBookingRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +26,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "Bookings", description = "Criação, cancelamento e consulta de reservas")
 @RestController
 @RequestMapping("/api/bookings")
 public class BookingController {
@@ -40,6 +43,7 @@ public class BookingController {
         this.queryBookingsUseCase = queryBookingsUseCase;
     }
 
+    @Operation(summary = "Criar reserva", description = "Reserva um slot disponível. Retorna 409 se o slot já estiver reservado.")
     @PostMapping
     public ResponseEntity<BookingResponse> create(@RequestBody @Valid CreateBookingRequest request) {
         var command = new CreateBookingCommand(SlotId.of(request.slotId()), request.userId());
@@ -48,12 +52,14 @@ public class BookingController {
         return ResponseEntity.created(location).body(BookingResponse.from(result));
     }
 
+    @Operation(summary = "Cancelar reserva", description = "Cancela a reserva e libera o slot de volta a AVAILABLE.")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> cancel(@PathVariable UUID id) {
         cancelBookingUseCase.cancel(new CancelBookingCommand(BookingId.of(id), null));
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Listar reservas por usuário")
     @GetMapping
     public ResponseEntity<List<BookingResponse>> findByUser(@RequestParam String userId) {
         var results = queryBookingsUseCase.findByUser(userId).stream()
