@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,6 +23,13 @@ import java.util.Objects;
 public class GlobalExceptionHandler {
 
     // --- 409 Conflict ---
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<ProblemDetail> handleOptimisticLocking(
+            ObjectOptimisticLockingFailureException ex, HttpServletRequest request) {
+        return conflict("slot_conflict", "Conflito de reserva",
+                "O slot foi modificado por outra transação. Tente novamente.", request);
+    }
 
     @ExceptionHandler(SlotNotAvailableException.class)
     public ResponseEntity<ProblemDetail> handleSlotNotAvailable(
