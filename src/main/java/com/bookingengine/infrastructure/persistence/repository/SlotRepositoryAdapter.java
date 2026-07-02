@@ -40,7 +40,9 @@ public class SlotRepositoryAdapter implements SlotRepository {
 
     @Override
     public Slot save(Slot slot) {
-        var saved = jpaRepository.save(SlotMapper.toEntity(slot));
+        // saveAndFlush garante que o Hibernate executa o UPDATE antes de retornar,
+        // incrementando @Version na entidade gerenciada e refletindo no domínio
+        var saved = jpaRepository.saveAndFlush(SlotMapper.toEntity(slot));
         return SlotMapper.toDomain(saved);
     }
 }
