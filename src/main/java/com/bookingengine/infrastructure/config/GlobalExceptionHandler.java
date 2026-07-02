@@ -1,5 +1,6 @@
 package com.bookingengine.infrastructure.config;
 
+import com.bookingengine.domain.exception.BookingAlreadyCancelledException;
 import com.bookingengine.domain.exception.BookingNotFoundException;
 import com.bookingengine.domain.exception.ResourceNotFoundException;
 import com.bookingengine.domain.exception.SlotNotAvailableException;
@@ -17,6 +18,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleSlotNotAvailable(SlotNotAvailableException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse("SLOT_NOT_AVAILABLE", ex.getMessage()));
+    }
+
+    @ExceptionHandler(BookingAlreadyCancelledException.class)
+    public ResponseEntity<ErrorResponse> handleBookingAlreadyCancelled(BookingAlreadyCancelledException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("BOOKING_ALREADY_CANCELLED", ex.getMessage()));
     }
 
     @ExceptionHandler(SlotNotFoundException.class)
