@@ -1,5 +1,6 @@
 package com.bookingengine.application.usecase;
 
+import com.bookingengine.domain.exception.BookingNotFoundException;
 import com.bookingengine.domain.port.in.CancelBookingCommand;
 import com.bookingengine.domain.port.in.CancelBookingUseCase;
 import com.bookingengine.domain.port.out.BookingRepository;
@@ -21,6 +22,16 @@ public class CancelBookingService implements CancelBookingUseCase {
 
     @Override
     public void cancel(CancelBookingCommand command) {
-        throw new UnsupportedOperationException("não implementado");
+        var booking = bookingRepository.findById(command.bookingId())
+                .orElseThrow(() -> new BookingNotFoundException(
+                        "reserva %s não encontrada".formatted(command.bookingId().value())));
+
+        booking.cancel(); // lança BookingAlreadyCancelledException se já cancelada
+
+        var slot = slotRepository.findByIdWithLock(booking.getSlotId());
+        slot.release();   // libera o slot de volta para AVAILABLE
+
+        slotRepository.save(slot);
+        bookingRepository.save(booking);
     }
 }

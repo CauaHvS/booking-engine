@@ -21,6 +21,13 @@ public class QuerySlotsService implements QuerySlotsUseCase {
 
     @Override
     public List<SlotResult> findAvailable(ResourceId resourceId) {
-        throw new UnsupportedOperationException("não implementado");
+        return slotRepository.findAvailableByResourceId(resourceId).stream()
+                .map(s -> new SlotResult(
+                        s.getId().value(),
+                        s.getResourceId().value(),
+                        s.getStartTime(),
+                        s.getEndTime(),
+                        s.getStatus().name()))
+                .toList();
     }
 }

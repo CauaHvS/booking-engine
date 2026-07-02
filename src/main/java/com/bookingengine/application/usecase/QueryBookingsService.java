@@ -20,6 +20,12 @@ public class QueryBookingsService implements QueryBookingsUseCase {
 
     @Override
     public List<BookingResult> findByUser(String userId) {
-        throw new UnsupportedOperationException("não implementado");
+        return bookingRepository.findByUserId(userId).stream()
+                .map(b -> new BookingResult(
+                        b.getId().value(),
+                        b.getSlotId().value(),
+                        b.getUserId(),
+                        b.getStatus().name()))
+                .toList();
     }
 }

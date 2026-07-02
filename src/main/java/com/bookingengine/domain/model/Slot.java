@@ -50,6 +50,10 @@ public class Slot {
         this.status = SlotStatus.RESERVED;
     }
 
+    public void release() {
+        this.status = SlotStatus.AVAILABLE;
+    }
+
     public boolean isAvailable() {
         return status == SlotStatus.AVAILABLE;
     }
